@@ -20,6 +20,11 @@ RUN apt-get update -qqy \
   && rm -rf /var/lib/apt/lists/*
 
 #==========
+# GNOME desktop
+#==========
+RUN apt-get install ubuntu-desktop
+
+#==========
 # Selenium
 #==========
 RUN  mkdir -p /opt/selenium \
@@ -32,6 +37,8 @@ RUN sudo useradd seluser --shell /bin/bash --create-home \
   && sudo usermod -a -G sudo seluser \
   && echo 'ALL ALL = (ALL) NOPASSWD: ALL' >> /etc/sudoers \
   && echo 'seluser:secret' | chpasswd
+
+
 
 
 ENV DEBIAN_FRONTEND noninteractive
@@ -119,32 +126,3 @@ RUN npm install -g karma
 RUN npm install -g request
 RUN npm install -g protractor
 
-#========================
-# Selenium Configuration
-#========================
-COPY bin/config.json /opt/selenium/config.json
-
-#=================================
-# Chrome Launch Script Modication
-#=================================
-COPY bin/chrome_launcher.sh /opt/google/chrome/google-chrome
-RUN chmod +x /opt/google/chrome/google-chrome
-
-
-#====================================================================
-# Script to run selenium standalone server for Chrome and/or Firefox
-#====================================================================
-# Set up loggin directory for Selenium
-RUN \
-     mkdir /var/log/selenium && \
-     chown seluser:seluser /var/log/selenium
-
-
-CMD ["/opt/bin/entry_point.sh"]
-
-#=================================
-# Imagemagick for screen capture
-#=================================
-RUN apt-get update -qqy \
-  && apt-get -qqy --no-install-recommends install curl
-  
